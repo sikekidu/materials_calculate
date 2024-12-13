@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盾构机报价生成器</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>盾构机报价生成器</h1>
+    <form id="quoteForm">
+        <label for="project_name">项目名称:</label>
+        <input type="text" id="project_name" name="project_name" required><br>
+
+        <label for="diameter">盾构机直径:</label>
+        <input type="number" id="diameter" name="diameter" required><br>
+
+        <label for="distance">掘进里程:</label>
+        <input type="number" id="distance" name="distance" required><br>
+
+        <label for="shield_type">盾构机类型:</label>
+        <select id="shield_type" name="shield_type" required>
+            <option value="土压平衡盾构">土压平衡盾构</option>
+            <option value="泥水平衡盾构">泥水平衡盾构</option>
+        </select><br>
+
+        <button type="submit">生成报价</button>
+    </form>
+
+    <div id="quoteResult"></div>
+
+    <script>
+        document.getElementById('quoteForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/generate_quote', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            displayResult(result);
+        };
+
+        function displayResult(result) {
+            const quoteResultDiv = document.getElementById('quoteResult');
+            quoteResultDiv.innerHTML = `<h2>项目名称: ${result.project_name}</h2>`;
+
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+
+            const headerRow = document.createElement('tr');
+            const headerItem = document.createElement('th');
+            headerItem.textContent = '材料名称';
+            headerRow.appendChild(headerItem);
+            const headerQuantity = document.createElement('th');
+            headerQuantity.textContent = '数量';
+            headerRow.appendChild(headerQuantity);
+            thead.appendChild(headerRow);
+
+            for (const [item, quantity] of Object.entries(result.materials)) {
+                const row = document.createElement('tr');
+                const itemCell = document.createElement('td');
+                itemCell.textContent = item;
+                row.appendChild(itemCell);
+                const quantityCell = document.createElement('td');
+                quantityCell.textContent = quantity;
+                row.appendChild(quantityCell);
+                tbody.appendChild(row);
+            }
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            quoteResultDiv.appendChild(table);
+        }
+    </script>
+</body>
+</html>
