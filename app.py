@@ -33,7 +33,7 @@ def generate_quote():
     cursor = conn.cursor()
 
     # 根据盾构机类型查询数据
-    query = "SELECT * FROM shield WHERE shield_type = %s"
+    query = "SELECT item_name, item_code, unit, quantity, cost_price, cost_amount, reference_price, reference_amount FROM shield WHERE shield_type = %s"
     cursor.execute(query, (shield_type,))
     shield_data = cursor.fetchall()
 
