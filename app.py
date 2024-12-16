@@ -37,22 +37,16 @@ def generate_quote():
     cursor.execute(query, (shield_type,))
     shield_data = cursor.fetchall()
 
-    # 计算材料和设备需求（示例逻辑）
-    materials = {}
+    # 直接返回与输入的盾构机类型一致的所有数据
+    results = []
     for row in shield_data:
-        # 假设row包含材料和设备需求信息
-        # 确保 row[3] (shield_diameter) 和 row[4] (tunneling_distance) 是数字类型
-        try:
-            shield_diameter = float(row[3])
-            tunneling_distance = float(row[4])
-            materials[row[5]] = shield_diameter * float(distance)  # 示例计算
-        except ValueError:
-            materials[row[5]] = "Invalid data type for calculation"
+        results.append(row)
 
     cursor.close()
     conn.close()
 
-    return jsonify({'project_name': project_name, 'materials': materials})
+    print(f"返回的数据: {results}")  # 添加调试信息
+    return jsonify({'project_name': project_name, 'results': results})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

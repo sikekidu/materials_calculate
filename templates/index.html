@@ -63,22 +63,102 @@
             const tbody = document.createElement('tbody');
 
             const headerRow = document.createElement('tr');
-            const headerItem = document.createElement('th');
-            headerItem.textContent = '材料名称';
-            headerRow.appendChild(headerItem);
+            const headerIndex = document.createElement('th');
+            headerIndex.textContent = '序号';
+            headerRow.appendChild(headerIndex);
+            const headerProjectName = document.createElement('th');
+            headerProjectName.textContent = '项目名称';
+            headerRow.appendChild(headerProjectName);
+            const headerShieldType = document.createElement('th');
+            headerShieldType.textContent = '盾构类型';
+            headerRow.appendChild(headerShieldType);
+            const headerDiameter = document.createElement('th');
+            headerDiameter.textContent = '盾构机直径';
+            headerRow.appendChild(headerDiameter);
+            const headerDistance = document.createElement('th');
+            headerDistance.textContent = '掘进里程';
+            headerRow.appendChild(headerDistance);
+            const headerItemName = document.createElement('th');
+            headerItemName.textContent = '材料名称';
+            headerRow.appendChild(headerItemName);
+            const headerItemCode = document.createElement('th');
+            headerItemCode.textContent = '材料编码';
+            headerRow.appendChild(headerItemCode);
+            const headerUnit = document.createElement('th');
+            headerUnit.textContent = '单位';
+            headerRow.appendChild(headerUnit);
             const headerQuantity = document.createElement('th');
             headerQuantity.textContent = '数量';
             headerRow.appendChild(headerQuantity);
+            const headerCostPrice = document.createElement('th');
+            headerCostPrice.textContent = '成本价格';
+            headerRow.appendChild(headerCostPrice);
+            const headerCostAmount = document.createElement('th');
+            headerCostAmount.textContent = '成本金额';
+            headerRow.appendChild(headerCostAmount);
+            const headerReferencePrice = document.createElement('th');
+            headerReferencePrice.textContent = '参考价格';
+            headerRow.appendChild(headerReferencePrice);
+            const headerReferenceAmount = document.createElement('th');
+            headerReferenceAmount.textContent = '参考金额';
+            headerRow.appendChild(headerReferenceAmount);
             thead.appendChild(headerRow);
 
-            for (const [item, quantity] of Object.entries(result.materials)) {
+            let index = 1; // Initialize index for序号
+            for (const item of result.results) {
                 const row = document.createElement('tr');
-                const itemCell = document.createElement('td');
-                itemCell.textContent = item;
-                row.appendChild(itemCell);
+                const indexCell = document.createElement('td');
+                indexCell.textContent = index++; // Set序号
+                row.appendChild(indexCell);
+
+                const projectNameCell = document.createElement('td');
+                projectNameCell.textContent = item[1]; // 项目名称
+                row.appendChild(projectNameCell);
+
+                const shieldTypeCell = document.createElement('td');
+                shieldTypeCell.textContent = item[2]; // 盾构类型
+                row.appendChild(shieldTypeCell);
+
+                const diameterCell = document.createElement('td');
+                diameterCell.textContent = item[3]; // 盾构机直径
+                row.appendChild(diameterCell);
+
+                const distanceCell = document.createElement('td');
+                distanceCell.textContent = item[4]; // 掘进里程
+                row.appendChild(distanceCell);
+
+                const itemNameCell = document.createElement('td');
+                itemNameCell.textContent = item[5]; // 材料名称
+                row.appendChild(itemNameCell);
+
+                const itemCodeCell = document.createElement('td');
+                itemCodeCell.textContent = item[6]; // 材料编码
+                row.appendChild(itemCodeCell);
+
+                const unitCell = document.createElement('td');
+                unitCell.textContent = item[7]; // 单位
+                row.appendChild(unitCell);
+
                 const quantityCell = document.createElement('td');
-                quantityCell.textContent = quantity;
+                quantityCell.textContent = item[8]; // 数量
                 row.appendChild(quantityCell);
+
+                const costPriceCell = document.createElement('td');
+                costPriceCell.textContent = item[9]; // 成本价格
+                row.appendChild(costPriceCell);
+
+                const costAmountCell = document.createElement('td');
+                costAmountCell.textContent = item[10]; // 成本金额
+                row.appendChild(costAmountCell);
+
+                const referencePriceCell = document.createElement('td');
+                referencePriceCell.textContent = item[11]; // 参考价格
+                row.appendChild(referencePriceCell);
+
+                const referenceAmountCell = document.createElement('td');
+                referenceAmountCell.textContent = item[12]; // 参考金额
+                row.appendChild(referenceAmountCell);
+
                 tbody.appendChild(row);
             }
 
