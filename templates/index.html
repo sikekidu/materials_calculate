@@ -56,7 +56,12 @@
 
         function displayResult(result) {
             const quoteResultDiv = document.getElementById('quoteResult');
-            quoteResultDiv.innerHTML = `<h2>项目名称: ${result.project_name}</h2>`;
+            quoteResultDiv.innerHTML = `
+                <h2>项目名称: ${result.project_name}</h2>
+                <p>盾构机直径: ${document.getElementById('diameter').value}</p>
+                <p>掘进里程: ${document.getElementById('distance').value}</p>
+                <p>盾构机类型: ${document.getElementById('shield_type').value}</p>
+            `;
 
             const table = document.createElement('table');
             const thead = document.createElement('thead');
@@ -66,18 +71,6 @@
             const headerIndex = document.createElement('th');
             headerIndex.textContent = '序号';
             headerRow.appendChild(headerIndex);
-            const headerProjectName = document.createElement('th');
-            headerProjectName.textContent = '项目名称';
-            headerRow.appendChild(headerProjectName);
-            const headerShieldType = document.createElement('th');
-            headerShieldType.textContent = '盾构类型';
-            headerRow.appendChild(headerShieldType);
-            const headerDiameter = document.createElement('th');
-            headerDiameter.textContent = '盾构机直径';
-            headerRow.appendChild(headerDiameter);
-            const headerDistance = document.createElement('th');
-            headerDistance.textContent = '掘进里程';
-            headerRow.appendChild(headerDistance);
             const headerItemName = document.createElement('th');
             headerItemName.textContent = '材料名称';
             headerRow.appendChild(headerItemName);
@@ -103,7 +96,7 @@
             headerReferenceAmount.textContent = '参考金额';
             headerRow.appendChild(headerReferenceAmount);
             thead.appendChild(headerRow);
-
+            
             let index = 1; // Initialize index for序号
             for (const item of result.results) {
                 const row = document.createElement('tr');
@@ -111,52 +104,36 @@
                 indexCell.textContent = index++; // Set序号
                 row.appendChild(indexCell);
 
-                const projectNameCell = document.createElement('td');
-                projectNameCell.textContent = item[1]; // 项目名称
-                row.appendChild(projectNameCell);
-
-                const shieldTypeCell = document.createElement('td');
-                shieldTypeCell.textContent = item[2]; // 盾构类型
-                row.appendChild(shieldTypeCell);
-
-                const diameterCell = document.createElement('td');
-                diameterCell.textContent = item[3]; // 盾构机直径
-                row.appendChild(diameterCell);
-
-                const distanceCell = document.createElement('td');
-                distanceCell.textContent = item[4]; // 掘进里程
-                row.appendChild(distanceCell);
-
                 const itemNameCell = document.createElement('td');
-                itemNameCell.textContent = item[5]; // 材料名称
+                itemNameCell.textContent = item[0]; // 材料名称
                 row.appendChild(itemNameCell);
 
                 const itemCodeCell = document.createElement('td');
-                itemCodeCell.textContent = item[6]; // 材料编码
+                itemCodeCell.textContent = item[1]; // 材料编码
                 row.appendChild(itemCodeCell);
 
                 const unitCell = document.createElement('td');
-                unitCell.textContent = item[7]; // 单位
+                unitCell.textContent = item[2]; // 单位
                 row.appendChild(unitCell);
 
                 const quantityCell = document.createElement('td');
-                quantityCell.textContent = item[8]; // 数量
+                quantityCell.textContent = item[3]; // 数量
                 row.appendChild(quantityCell);
 
                 const costPriceCell = document.createElement('td');
-                costPriceCell.textContent = item[9]; // 成本价格
+                costPriceCell.textContent = item[4]; // 成本价格
                 row.appendChild(costPriceCell);
 
                 const costAmountCell = document.createElement('td');
-                costAmountCell.textContent = item[10]; // 成本金额
+                costAmountCell.textContent = item[5]; // 成本金额
                 row.appendChild(costAmountCell);
 
                 const referencePriceCell = document.createElement('td');
-                referencePriceCell.textContent = item[11]; // 参考价格
+                referencePriceCell.textContent = item[6]; // 参考价格
                 row.appendChild(referencePriceCell);
 
                 const referenceAmountCell = document.createElement('td');
-                referenceAmountCell.textContent = item[12]; // 参考金额
+                referenceAmountCell.textContent = item[7]; // 参考金额
                 row.appendChild(referenceAmountCell);
 
                 tbody.appendChild(row);
