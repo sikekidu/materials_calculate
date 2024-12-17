@@ -46,7 +46,7 @@
     <div id="quoteResult"></div>
 
     <!-- Add Item Button -->
-    <button id="addItemBtn">添加条目</button>
+    <button id="addItemBtn" style="display: none;">添加条目</button>
 
     <script>
         document.getElementById('quoteForm').onsubmit = async function(event) {
@@ -58,6 +58,9 @@
             });
             const result = await response.json();
             displayResult(result);
+
+            // Show the add item button after generating the quote
+            document.getElementById('addItemBtn').style.display = 'inline-block';
         };
 
         function displayResult(result) {
