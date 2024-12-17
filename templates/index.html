@@ -45,6 +45,9 @@
 
     <div id="quoteResult"></div>
 
+    <!-- Add Item Button -->
+    <button id="addItemBtn">添加条目</button>
+
     <script>
         document.getElementById('quoteForm').onsubmit = async function(event) {
             event.preventDefault();
@@ -70,6 +73,7 @@
             table.id = 'quoteTable';
             const thead = document.createElement('thead');
             const tbody = document.createElement('tbody');
+            const tfoot = document.createElement('tfoot');
 
             const headerRow = document.createElement('tr');
             const headerIndex = document.createElement('th');
@@ -99,9 +103,15 @@
             const headerReferenceAmount = document.createElement('th');
             headerReferenceAmount.textContent = '参考金额';
             headerRow.appendChild(headerReferenceAmount);
+            const headerActions = document.createElement('th');
+            headerActions.textContent = '操作';
+            headerRow.appendChild(headerActions);
             thead.appendChild(headerRow);
-            
+
             let index = 1; // Initialize index for序号
+            let totalCostAmount = 0;
+            let totalReferenceAmount = 0;
+
             for (const item of result.results) {
                 const row = document.createElement('tr');
                 const indexCell = document.createElement('td');
@@ -131,6 +141,7 @@
                 const costAmountCell = document.createElement('td');
                 costAmountCell.textContent = item[5]; // 成本金额
                 row.appendChild(costAmountCell);
+                totalCostAmount += parseFloat(item[5]);
 
                 const referencePriceCell = document.createElement('td');
                 referencePriceCell.textContent = item[6]; // 参考价格
@@ -139,12 +150,52 @@
                 const referenceAmountCell = document.createElement('td');
                 referenceAmountCell.textContent = item[7]; // 参考金额
                 row.appendChild(referenceAmountCell);
+                totalReferenceAmount += parseFloat(item[7]);
+
+                const actionsCell = document.createElement('td');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.onclick = function() {
+                    row.remove();
+                    updateIndexes();
+                    updateTotals();
+                };
+                actionsCell.appendChild(deleteButton);
+                row.appendChild(actionsCell);
 
                 tbody.appendChild(row);
             }
 
+            const footerRow = document.createElement('tr');
+            const footerIndex = document.createElement('td');
+            footerIndex.textContent = '合计';
+            footerRow.appendChild(footerIndex);
+
+            // Add empty cells to align the totals correctly
+            for (let i = 0; i < 5; i++) {
+                const emptyCell = document.createElement('td');
+                footerRow.appendChild(emptyCell);
+            }
+
+            const footerCostAmount = document.createElement('td');
+            footerCostAmount.textContent = totalCostAmount.toFixed(2);
+            footerRow.appendChild(footerCostAmount);
+
+            const emptyCellBeforeReferenceAmount = document.createElement('td');
+            footerRow.appendChild(emptyCellBeforeReferenceAmount);
+
+            const footerReferenceAmount = document.createElement('td');
+            footerReferenceAmount.textContent = totalReferenceAmount.toFixed(2);
+            footerRow.appendChild(footerReferenceAmount);
+
+            const footerActions = document.createElement('td');
+            footerRow.appendChild(footerActions);
+
+            tfoot.appendChild(footerRow);
+
             table.appendChild(thead);
             table.appendChild(tbody);
+            table.appendChild(tfoot);
             quoteResultDiv.appendChild(table);
 
             // Initialize DataTable
@@ -169,6 +220,7 @@
                     input.on('blur', function() {
                         const newValue = $(this).val();
                         cell.empty().text(newValue);
+                        updateTotals();
                     });
 
                     input.on('keypress', function(e) {
@@ -178,6 +230,86 @@
                     });
                 });
             });
+
+            // Add event listener for add item button
+            document.getElementById('addItemBtn').onclick = function() {
+                addEmptyRow();
+            };
+
+            function addEmptyRow() {
+                const row = document.createElement('tr');
+                const indexCell = document.createElement('td');
+                indexCell.textContent = index++; // Set序号
+                row.appendChild(indexCell);
+
+                const itemNameCell = document.createElement('td');
+                itemNameCell.textContent = ''; // 材料名称
+                row.appendChild(itemNameCell);
+
+                const itemCodeCell = document.createElement('td');
+                itemCodeCell.textContent = ''; // 材料编码
+                row.appendChild(itemCodeCell);
+
+                const unitCell = document.createElement('td');
+                unitCell.textContent = ''; // 单位
+                row.appendChild(unitCell);
+
+                const quantityCell = document.createElement('td');
+                quantityCell.textContent = ''; // 数量
+                row.appendChild(quantityCell);
+
+                const costPriceCell = document.createElement('td');
+                costPriceCell.textContent = ''; // 成本价格
+                row.appendChild(costPriceCell);
+
+                const costAmountCell = document.createElement('td');
+                costAmountCell.textContent = ''; // 成本金额
+                row.appendChild(costAmountCell);
+
+                const referencePriceCell = document.createElement('td');
+                referencePriceCell.textContent = ''; // 参考价格
+                row.appendChild(referencePriceCell);
+
+                const referenceAmountCell = document.createElement('td');
+                referenceAmountCell.textContent = ''; // 参考金额
+                row.appendChild(referenceAmountCell);
+
+                const actionsCell = document.createElement('td');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.onclick = function() {
+                    row.remove();
+                    updateIndexes();
+                    updateTotals();
+                };
+                actionsCell.appendChild(deleteButton);
+                row.appendChild(actionsCell);
+
+                tbody.appendChild(row);
+                updateTotals(); // Update totals after adding a new row
+            }
+
+            function updateIndexes() {
+                const rows = tbody.getElementsByTagName('tr');
+                let newIndex = 1;
+                for (const row of rows) {
+                    row.cells[0].textContent = newIndex++;
+                }
+            }
+
+            function updateTotals() {
+                const rows = tbody.getElementsByTagName('tr');
+                let newTotalCostAmount = 0;
+                let newTotalReferenceAmount = 0;
+                for (const row of rows) {
+                    const costAmount = parseFloat(row.cells[6].textContent) || 0; // 第七列：成本金额
+                    const referenceAmount = parseFloat(row.cells[8].textContent) || 0; // 第九列：参考金额
+                    newTotalCostAmount += costAmount;
+                    newTotalReferenceAmount += referenceAmount;
+                }
+                footerCostAmount.textContent = newTotalCostAmount.toFixed(2);
+                footerReferenceAmount.textContent = newTotalReferenceAmount.toFixed(2);
+            }
         }
     </script>
 </body>
