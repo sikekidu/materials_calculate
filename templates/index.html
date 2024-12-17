@@ -47,6 +47,8 @@
 
     <!-- Add Item Button -->
     <button id="addItemBtn" style="display: none;">添加条目</button>
+    <!-- Generate PDF Button -->
+    <button id="generatePdfBtn" style="display: none;">生成PDF</button>
 
     <script>
         document.getElementById('quoteForm').onsubmit = async function(event) {
@@ -59,8 +61,9 @@
             const result = await response.json();
             displayResult(result);
 
-            // Show the add item button after generating the quote
+            // Show the add item button and generate PDF button after generating the quote
             document.getElementById('addItemBtn').style.display = 'inline-block';
+            document.getElementById('generatePdfBtn').style.display = 'inline-block';
         };
 
         function displayResult(result) {
@@ -239,6 +242,11 @@
                 addEmptyRow();
             };
 
+            // Add event listener for generate PDF button
+            document.getElementById('generatePdfBtn').onclick = function() {
+                generatePdf();
+            };
+
             function addEmptyRow() {
                 const row = document.createElement('tr');
                 const indexCell = document.createElement('td');
@@ -312,6 +320,50 @@
                 }
                 footerCostAmount.textContent = newTotalCostAmount.toFixed(2);
                 footerReferenceAmount.textContent = newTotalReferenceAmount.toFixed(2);
+            }
+
+            function generatePdf() {
+                const data = {
+                    project_name: result.project_name,
+                    diameter: document.getElementById('diameter').value,
+                    distance: document.getElementById('distance').value,
+                    shield_type: document.getElementById('shield_type').value,
+                    results: getTableData()
+                };
+
+                fetch('/generate_pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => response.blob())
+                  .then(blob => {
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.style.display = 'none';
+                      a.href = url;
+                      a.download = 'quote.pdf';
+                      document.body.appendChild(a);
+                      a.click();
+                      window.URL.revokeObjectURL(url);
+                      alert('PDF 文档已生成并下载');
+                  }).catch(() => {
+                      alert('生成 PDF 文档失败');
+                  });
+            }
+
+            function getTableData() {
+                const rows = tbody.getElementsByTagName('tr');
+                const tableData = [];
+                for (const row of rows) {
+                    const rowData = [];
+                    for (let i = 1; i < row.cells.length - 1; i++) {
+                        rowData.push(row.cells[i].textContent);
+                    }
+                    tableData.push(rowData);
+                }
+                return tableData;
             }
         }
     </script>
