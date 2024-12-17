@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 from fpdf import FPDF
 import io
+import pdfkit  # 确保导入 pdfkit
 
 # 加载 .env 文件
 load_dotenv()
@@ -58,47 +59,15 @@ def generate_pdf():
     shield_type = data['shield_type']
     results = data['results']
 
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
+    # 计算合计
+    total_amount = sum(float(item[7]) for item in results)  # 假设第7列是参考金额
 
-    # 添加标题
-    pdf.set_font("Arial", size=20, style="B")
-    pdf.cell(200, 10, txt="设备维保事业部", ln=True, align='C')
+    # 使用模板生成 PDF
+    pdf_html = render_template('pdf_template.html', project_name=project_name, diameter=diameter, distance=distance, shield_type=shield_type, results=results, total_amount=total_amount)
 
-    # 添加项目信息
-    pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt=f"项目名称: {project_name}", ln=True)
-    pdf.cell(200, 10, txt=f"盾构机直径: {diameter}", ln=True)
-    pdf.cell(200, 10, txt=f"掘进里程: {distance}", ln=True)
-    pdf.cell(200, 10, txt=f"盾构机类型: {shield_type}", ln=True)
-
-    # 添加表格
-    pdf.set_font("Arial", size=12, style="B")
-    pdf.cell(200, 10, txt="序号 材料名称 单位 数量 参考价格 参考金额", ln=True, align='C')
-
-    # 添加表格数据
-    pdf.set_font("Arial", size=12)
-    for index, row in enumerate(results, start=1):
-        if index % 20 == 0:  # 每20行添加一页
-            pdf.add_page()
-            pdf.set_font("Arial", size=12, style="B")
-            pdf.cell(200, 10, txt="序号 材料名称 单位 数量 参考价格 参考金额", ln=True, align='C')
-        row_data = [
-            str(index),  # 序号
-            row[0],       # 材料名称
-            row[2],       # 单位
-            row[3],       # 数量
-            row[6],       # 参考价格
-            row[7]        # 参考金额
-        ]
-        pdf.cell(200, 10, txt=" ".join(row_data), ln=True)
-
-    # 保存 PDF 到内存
-    pdf_data = io.BytesIO()
-    pdf.output(pdf_data)
-    pdf_data.seek(0)
-    return send_file(pdf_data, as_attachment=True, download_name='quote.pdf', mimetype='application/pdf')
+    # 生成 PDF
+    pdf = pdfkit.from_string(pdf_html, False)
+    return send_file(io.BytesIO(pdf), download_name='quote.pdf', as_attachment=True)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
