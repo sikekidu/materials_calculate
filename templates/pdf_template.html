@@ -3,20 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>维保事业部报价单</title>
+    <style>
+        body {
+            text-align: center; /* 使内容居中 */
+        }
+        table {
+            margin: 0 auto; /* 表格居中 */
+            border-collapse: collapse; /* 合并边框 */
+            width: 100%; /* 使表格宽度适应页面 */
+        }
+        th, td {
+            border: 1px solid black; /* 添加边框 */
+            padding: 8px; /* 添加内边距 */
+            text-align: center; /* 内容居中 */
+        }
+    </style>
 </head>
 <body>
-    <h1>项目名称: {{ project_name }}</h1>
+    <h1>维保事业部报价单</h1>
+    <h2>项目名称: {{ project_name }}</h2>
     <p>盾构机直径: {{ diameter }}</p>
     <p>掘进里程: {{ distance }}</p>
     <p>盾构机类型: {{ shield_type }}</p>
-    <table border="1">
+    <table>
         <tr>
             <th>序号</th>
             <th>材料名称</th>
             <th>单位</th>
             <th>数量</th>
-            <th>参考价格</th>
-            <th>参考金额</th>
+            <th>参考价格（元）</th>
+            <th>参考金额（元）</th>
         </tr>
         {% for item in results %}
         <tr>
@@ -27,6 +43,31 @@
             <td>{{ item[6] }}</td>
             <td>{{ item[7] }}</td>
         </tr>
+        {% if loop.index == 30 %} <!-- 第一页显示30行 -->
+        </table>
+        <div style="page-break-after: always;"></div>
+        <table>
+            <tr>
+                <th>序号</th>
+                <th>材料名称</th>
+                <th>单位</th>
+                <th>数量</th>
+                <th>参考价格（元）</th>
+                <th>参考金额（元）</th>
+            </tr>
+        {% elif loop.index > 30 and (loop.index - 30) % 35 == 0 %} <!-- 后续页面显示35行 -->
+        </table>
+        <div style="page-break-after: always;"></div>
+        <table>
+            <tr>
+                <th>序号</th>
+                <th>材料名称</th>
+                <th>单位</th>
+                <th>数量</th>
+                <th>参考价格（元）</th>
+                <th>参考金额（元）</th>
+            </tr>
+        {% endif %}
         {% endfor %}
         <tr>
             <td colspan="5" style="text-align: right;">合计</td>
