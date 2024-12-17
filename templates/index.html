@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>盾构机报价生成器</title>
     <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <style>
         table {
             width: 100%;
@@ -64,6 +67,7 @@
             `;
 
             const table = document.createElement('table');
+            table.id = 'quoteTable';
             const thead = document.createElement('thead');
             const tbody = document.createElement('tbody');
 
@@ -106,71 +110,74 @@
 
                 const itemNameCell = document.createElement('td');
                 itemNameCell.textContent = item[0]; // 材料名称
-                itemNameCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 row.appendChild(itemNameCell);
 
                 const itemCodeCell = document.createElement('td');
-                itemCodeCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 itemCodeCell.textContent = item[1]; // 材料编码
                 row.appendChild(itemCodeCell);
 
                 const unitCell = document.createElement('td');
-                unitCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 unitCell.textContent = item[2]; // 单位
                 row.appendChild(unitCell);
 
                 const quantityCell = document.createElement('td');
-                quantityCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 quantityCell.textContent = item[3]; // 数量
                 row.appendChild(quantityCell);
 
                 const costPriceCell = document.createElement('td');
-                costPriceCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 costPriceCell.textContent = item[4]; // 成本价格
                 row.appendChild(costPriceCell);
 
                 const costAmountCell = document.createElement('td');
-                costAmountCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 costAmountCell.textContent = item[5]; // 成本金额
                 row.appendChild(costAmountCell);
 
                 const referencePriceCell = document.createElement('td');
-                referencePriceCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 referencePriceCell.textContent = item[6]; // 参考价格
                 row.appendChild(referencePriceCell);
 
                 const referenceAmountCell = document.createElement('td');
-                referenceAmountCell.setAttribute('contenteditable', 'true'); // 设置为可编辑
                 referenceAmountCell.textContent = item[7]; // 参考金额
                 row.appendChild(referenceAmountCell);
 
-                // 添加删除按钮
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = '删除';
-                deleteButton.onclick = function() {
-                    row.remove(); // 删除对应的行
-                    updateRowNumbers(); // 更新序号
-                };
-                const deleteCell = document.createElement('td'); // 创建一个新的单元格来放置删除按钮
-                deleteCell.appendChild(deleteButton); // 将删除按钮添加到新单元格中
-                deleteCell.style.border = 'none'; // 隐藏所有边框
-                row.appendChild(deleteCell); // 将新单元格添加到行中
                 tbody.appendChild(row);
-
-                // 更新序号的函数
-                function updateRowNumbers() {
-                    const rows = tbody.getElementsByTagName('tr');
-                    for (let i = 0; i < rows.length; i++) {
-                        const indexCell = rows[i].getElementsByTagName('td')[0]; // 获取序号单元格
-                        indexCell.textContent = i + 1; // 更新序号
-                    }
-                }
             }
 
-                table.style.border = 'none'; // 隐藏表格的最外层边框
-                table.appendChild(thead);
+            table.appendChild(thead);
             table.appendChild(tbody);
             quoteResultDiv.appendChild(table);
+
+            // Initialize DataTable
+            $(document).ready(function() {
+                $('#quoteTable').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    columnDefs: [
+                        { targets: '_all', className: 'editable' }
+                    ]
+                });
+
+                // Make all cells editable
+                $('#quoteTable tbody').on('click', 'td', function() {
+                    const cell = $(this);
+                    const originalContent = cell.text();
+                    const input = $('<input type="text" />').val(originalContent);
+                    cell.empty().append(input);
+                    input.focus();
+
+                    input.on('blur', function() {
+                        const newValue = $(this).val();
+                        cell.empty().text(newValue);
+                    });
+
+                    input.on('keypress', function(e) {
+                        if (e.which === 13) { // Enter key
+                            $(this).blur();
+                        }
+                    });
+                });
+            });
         }
     </script>
 </body>
